@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Secrets
+.env
+.env.*          # e.g., .env.local, .env.dev
+
+# VS Code
+.vscode/
+
+# Notebooks cache
+.ipynb_checkpoints/
+
+# (Optional) Large data not meant for Git
+data/raw/
+data/interim/
