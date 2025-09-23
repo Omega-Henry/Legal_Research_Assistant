@@ -1,14 +1,3 @@
 {
-    "sqltools.connections": [
-        {
-            "previewLimit": 50,
-            "server": "localhost",
-            "port": 5433,
-            "driver": "PostgreSQL",
-            "name": "PSQL",
-            "database": "noe_db",
-            "username": "noe_user",
-            "password": "1234"
-        }
-    ]
+    "sqltools.connections": []
 }

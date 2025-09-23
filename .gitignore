@@ -6,6 +6,8 @@ __pycache__/
 # Secrets
 .env
 .env.*          # e.g., .env.local, .env.dev
+!.env.example
+!.env.db.example
 
 # VS Code
 .vscode/

@@ -6,7 +6,7 @@ import requests
 
 load_dotenv(Path("/home/noe/Desktop/Ai_Legal research_assistant/.env"))
 
-NDJSON = Path("/home/noe/Desktop/Ai_Legal research_assistant/data/processed/stgb_sections.ndjson")  # adjust if needed
+NDJSON = Path("/home/noe/Desktop/Ai_Legal research_assistant/data/interim/stgb_sections.ndjson")  # NDJSON with sections
 K = 5  # top-k results
 
 # Azure config

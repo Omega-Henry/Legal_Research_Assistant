@@ -4,7 +4,7 @@ import json, re
 from pathlib import Path
 
 XML_IN  = Path("/home/noe/Desktop/Ai_Legal research_assistant/data/raw/BJNR001270871.xml")          # StGB XML
-NDJSON_OUT = Path("/home/noe/Desktop/Ai_Legal research_assistant/data/processed/stgb_sections.ndjson")    # output NDJSON
+NDJSON_OUT = Path("/home/noe/Desktop/Ai_Legal research_assistant/data/interim/stgb_sections.ndjson")  # output
 
 def raw_text(el):
     return "".join(el.itertext()) if el is not None else ""
