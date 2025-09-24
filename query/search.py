@@ -37,15 +37,28 @@ def search(query: str, k: int = 5):
     )
 
     with conn, conn.cursor() as cur:
-        cur.execute(f"""
-            SELECT section_number,
-                   section_title,
-                   1 - (embedding <=> %s::vector) AS similarity
-            FROM legal.chunks
-            ORDER BY embedding <=> %s::vector
-            LIMIT %s;
-        """, (qvec, qvec, k))
+        like_term = f"%{query.lower()}%"
+        cur.execute(
+                """
+                SELECT c.section_number,
+                    c.section_title,
+                    1 - (c.embedding <=> %s::vector) AS similarity
+                FROM legal.chunks c
+                JOIN legal.documents d ON d.id = c.document_id
+                WHERE d.law_abbr = 'StGB'
+                ORDER BY
+                    (c.embedding <=> %s::vector)
+                + CASE
+                        WHEN lower(c.section_title) LIKE %s THEN -0.02
+                        WHEN lower(c.full_text)     LIKE %s THEN -0.02
+                        ELSE 0
+                    END
+                LIMIT %s;
+                """,
+        (qvec, qvec, like_term, like_term, 10),
+    )
         rows = cur.fetchall()
+
 
     conn.close()
     return rows

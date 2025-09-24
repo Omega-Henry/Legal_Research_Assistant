@@ -1,4 +1,4 @@
-# embed/insert_chunks_fast.py
+# embed/insert_chunks.py
 import os, json, time
 from pathlib import Path
 from dotenv import load_dotenv
