@@ -6,7 +6,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 # load .env from project root
-load_dotenv(Path("/home/noe/Desktop/Ai_Legal research_assistant/.env"))
+ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(ROOT / ".env")
 
 # --- Azure embeddings ---
 ENDPOINT   = os.environ["AZURE_OPENAI_ENDPOINT"]
@@ -17,7 +18,7 @@ API_VER    = os.getenv("AZURE_API_VERSION", "2024-05-01-preview")
 def embed(text: str):
     url = f"{ENDPOINT}/openai/deployments/{DEPLOYMENT}/embeddings?api-version={API_VER}"
     r = requests.post(url, headers={"api-key": API_KEY, "Content-Type": "application/json"},
-                      json={"input": [text]}, timeout=60)
+                    json={"input": [text]}, timeout=60)
     r.raise_for_status()
     return r.json()["data"][0]["embedding"]
 
