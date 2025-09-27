@@ -66,14 +66,16 @@ psql "host=$PGHOST port=$PGPORT dbname=$PGDATABASE user=$PGUSER password=$PGPASS
 ```bash 
 python query/search.py
 ```
-Example:
+### Example:
 
-> Query: Welche Vorschrift regelt Diebstahl?
-> Top 10 Treffer:
-> § 242 Diebstahl  |  similarity=0.870
-> § 248a Diebstahl und Unterschlagung geringwertiger Sachen  |  similarity=0.863
-> § 243 Besonders schwerer Fall des Diebstahls  |  similarity=0.861
-> ...
+```bash
+Query: Welche Vorschrift regelt Diebstahl?
+Top 10 Treffer:
+ § 242 Diebstahl  |  similarity=0.870
+ § 248a Diebstahl und Unterschlagung geringwertiger Sachen  |  similarity=0.863
+ § 243 Besonders schwerer Fall des Diebstahls  |  similarity=0.861
+ ...
+```
 
 ## 5) Run the RAG API (local)
 
