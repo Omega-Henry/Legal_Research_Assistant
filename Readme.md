@@ -61,11 +61,6 @@ psql "host=$PGHOST port=$PGPORT dbname=$PGDATABASE user=$PGUSER password=$PGPASS
   ```
 ## ## 3) Database bootstrap
 
-### 3.1 Create schema & indexes
-```bash
-psql "host=$PGHOST port=$PGPORT dbname=$PGDATABASE user=$PGUSER password=$PGPASSWORD sslmode=$PGSSLMODE" \
-  -f db/schema.sql
-```
 ## 4) Quick search test
 
 ```bash 
@@ -73,8 +68,8 @@ python query/search.py
 ```
 Example:
 
->Query: Welche Vorschrift regelt Diebstahl?
->Top 10 Treffer:
+> Query: Welche Vorschrift regelt Diebstahl?
+> Top 10 Treffer:
 > § 242 Diebstahl  |  similarity=0.870
 > § 248a Diebstahl und Unterschlagung geringwertiger Sachen  |  similarity=0.863
 > § 243 Besonders schwerer Fall des Diebstahls  |  similarity=0.861
