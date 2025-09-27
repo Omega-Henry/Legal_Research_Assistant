@@ -1,6 +1,6 @@
 # Legal Research Assistant (DE) — StGB + pgvector + Azure RAG
 
-> **Status:** Prototype for interview demo (local run).  
+> **Status:** Prototype for demo (local run).  
 > **Scope:** German Criminal Code (StGB) ingested; vector search via pgvector; RAG answer API via Azure Chat model.  
 > **Disclaimer:** Not legal advice.
 
@@ -17,6 +17,7 @@
 
 ## 1) Project Layout
 
+```bash
 Legal_Research_Assistant/
 ├─ app/
 │  └─ api.py                 # FastAPI: POST /ask → {answer, citations}
@@ -33,3 +34,4 @@ Legal_Research_Assistant/
 ├─ .env.example              # template for secrets (safe to commit)
 ├─ requirements.txt          # frozen dependencies
 └─ README.md
+---
