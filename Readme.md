@@ -25,7 +25,7 @@ Legal_Research_Assistant/
 │  └─ schema.sql             # schemas, tables, indexes (pgvector)
 ├─ embed/
 │  ├─ embed_all_stgb.py      # creates embeddings NDJSON with Azure
-│  └─ insert_chunks_fast.py  # bulk inserts (resumable)
+│  └─ insert_chunks.py  # bulk inserts (resumable)
 ├─ query/
 │  └─ search.py              # quick CLI vector search
 ├─ data/
