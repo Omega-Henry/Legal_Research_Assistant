@@ -40,14 +40,22 @@ class AskResp(BaseModel):
     answer: str
     citations: List[Cite]
 
+# ---------------------------
+# Embeddings + Retrieval
+# ---------------------------
 def embed(text: str):
     url = f"{AOAI_ENDPOINT}/openai/deployments/{EMB_DEPLOY}/embeddings?api-version={API_VER}"
-    r = requests.post(url, headers={"api-key": AOAI_API_KEY, "Content-Type":"application/json"},
-                      json={"input":[text]}, timeout=60)
+    r = requests.post(
+        url,
+        headers={"api-key": AOAI_API_KEY, "Content-Type": "application/json"},
+        json={"input": [text]},
+        timeout=60,
+    )
     r.raise_for_status()
     return r.json()["data"][0]["embedding"]
 
-def vec_str(v): return "[" + ",".join(f"{x:.7f}" for x in v) + "]"
+def vec_str(v): 
+    return "[" + ",".join(f"{x:.7f}" for x in v) + "]"
 
 def retrieve(question: str, k: int, law: str):
     qvec = vec_str(embed(question))
@@ -64,37 +72,87 @@ def retrieve(question: str, k: int, law: str):
         """, (qvec, law, qvec, k))
         rows = cur.fetchall()
     conn.close()
-    return [{"section_number": r[0], "section_title": r[1] or "", "text": r[2], "similarity": float(r[3])} for r in rows]
+    return [
+        {
+            "section_number": r[0],
+            "section_title": r[1] or "",
+            "text": r[2],
+            "similarity": float(r[3])
+        }
+        for r in rows
+    ]
 
 def build_context(docs, max_chars=8000):
+    """Compact, readable Kontextblöcke für das LLM."""
     parts, used = [], 0
     for d in docs:
         header = f"§ {d['section_number']} {d['section_title']}".strip()
+        # Kurzer Auszug, um Token zu sparen – Langtext ist im DB abrufbar
         snippet = textwrap.shorten(" ".join(d["text"].split()), width=1200, placeholder=" …")
         chunk = f"{header}\n{snippet}"
-        if used + len(chunk) > max_chars: break
-        parts.append(chunk); used += len(chunk)
+        if used + len(chunk) > max_chars:
+            break
+        parts.append(chunk)
+        used += len(chunk)
     return "\n\n---\n\n".join(parts)
+
+# ---------------------------
+# Chat / LLM
+# ---------------------------
+
+# Finaler deutscher Prompt: Antwort zuerst, dann Quellenliste
+SYSTEM_PROMPT_DE = (
+    "Du bist ein präziser juristischer Assistent für das deutsche Strafrecht (StGB). "
+    "ANTWORTE ZUERST kurz und klar auf DEUTSCH (2–6 Sätze). "
+    "DANN liste die QUELLEN unter der Überschrift „Quellen:“ – je Zeile im Format "
+    "„§ <Nummer> <Titel>“. "
+    "Nutze AUSSCHLIESSLICH den bereitgestellten Kontext. "
+    "Wenn der Kontext nicht ausreicht, sage das knapp und schlage vor, wie man die Frage präzisieren kann. "
+    "Beende deine Antwort mit: „Keine Rechtsberatung. Bitte im Gesetzestext prüfen.“"
+)
 
 def ask_llm(question: str, context: str):
     url = f"{AOAI_ENDPOINT}/openai/deployments/{CHAT_DEPLOY}/chat/completions?api-version={API_VER}"
-    sys = ("Du bist ein vorsichtiger juristischer Assistent (DE). "
-           "Antworte präzise in Deutsch und zitiere immer die relevanten Paragraphen "
-           "aus dem Kontext als (§ Nummer – Titel). Wenn der Kontext nicht reicht, sag das klar.")
-    user = (f"Frage:\n{question}\n\nKontextauszüge:\n{context}\n\n"
-            "Anweisung: Kurze, sachliche Antwort mit Zitaten in Klammern, z. B. (§ 242 – Diebstahl).")
-    r = requests.post(url, headers={"api-key": AOAI_API_KEY, "Content-Type":"application/json"},
-                      json={"messages":[{"role":"system","content":sys},{"role":"user","content":user}],
-                            "temperature":0.2, "max_tokens":450}, timeout=120)
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT_DE},
+        {
+            "role": "user",
+            "content": (
+                f"Frage:\n{question}\n\n"
+                f"Kontext (nur verwenden):\n{context}\n\n"
+                "Formatiere GENAU so:\n"
+                "<Antwort in 2–6 Sätzen>\n\n"
+                "Quellen:\n"
+                "- § <Nummer> <Titel>\n"
+                "- § <Nummer> <Titel>"
+            ),
+        },
+    ]
+    r = requests.post(
+        url,
+        headers={"api-key": AOAI_API_KEY, "Content-Type": "application/json"},
+        json={"messages": messages, "temperature": 0.2, "max_tokens": 500},
+        timeout=120,
+    )
     r.raise_for_status()
     return r.json()["choices"][0]["message"]["content"]
+
+# ---------------------------
+# API
+# ---------------------------
 
 @app.post("/ask", response_model=AskResp)
 def ask(body: AskReq):
     docs = retrieve(body.question, k=body.k, law=body.law)
     ctx  = build_context(docs)
     ans  = ask_llm(body.question, ctx)
-    cits = [Cite(section_number=d["section_number"], section_title=d["section_title"], similarity=d["similarity"]) for d in docs]
-    # Optional footer disclaimer
-    ans += "\n\n*Hinweis: Keine Rechtsberatung. Angaben ohne Gewähr; prüfen Sie stets den Gesetzestext.*"
+
+    cits = [
+        Cite(
+            section_number=d["section_number"],
+            section_title=d["section_title"],
+            similarity=d["similarity"]
+        )
+        for d in docs
+    ]
     return AskResp(answer=ans, citations=cits)
