@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Legal Research Assistant (DE)</title>
+  <meta name="color-scheme" content="light dark" />
+  <style>
+    :root {
+      --bg: #0b0f17;
+      --panel: #121826;
+      --muted: #93a1b1;
+      --text: #e6edf3;
+      --accent: #6ea8fe;
+      --accent-2: #8ce99a;
+      --danger: #ff6b6b;
+      --border: #222b3b;
+      --chip: #1b2335;
+      --shadow: 0 10px 25px rgba(0,0,0,.25);
+      --radius: 14px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f6f7fb;
+        --panel: #ffffff;
+        --muted: #667085;
+        --text: #0f172a;
+        --accent: #2563eb;
+        --accent-2: #059669;
+        --border: #e6e8ee;
+        --chip: #f1f5f9;
+        --shadow: 0 8px 18px rgba(10,20,40,.12);
+      }
+    }
+    * { box-sizing: border-box }
+    html,body { height: 100% }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at 80% -10%, rgba(37,99,235,.25), transparent 60%),
+        radial-gradient(1200px 600px at 10% -20%, rgba(99,102,241,.25), transparent 60%),
+        var(--bg);
+    }
+    .container {
+      max-width: 960px;
+      margin: 24px auto 56px;
+      padding: 0 16px;
+    }
+    header {
+      display:flex; align-items:center; justify-content:space-between; gap:16px;
+      margin-bottom: 18px;
+    }
+    .brand {
+      display:flex; align-items:center; gap:12px;
+    }
+    .logo {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: linear-gradient(135deg,#2563eb, #7c3aed);
+      box-shadow: var(--shadow);
+    }
+    h1 { font-size: 1.25rem; margin: 0; letter-spacing: .2px }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+    .row { display:flex; gap:12px; flex-wrap: wrap; }
+    .grow { flex:1 1 auto }
+    label { display:block; font-size:.9rem; color:var(--muted); margin-bottom:6px }
+    input[type="text"], input[type="url"], textarea, select, input[type="number"] {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 10px;
+      outline: none;
+      transition: border .2s ease, background .2s ease;
+    }
+    input::placeholder, textarea::placeholder { color: #8a94a6 }
+    textarea { min-height: 110px; resize: vertical; }
+    input:focus, textarea:focus, select:focus { border-color: var(--accent) }
+    .btn {
+      appearance:none; border:0; cursor:pointer;
+      padding: 12px 16px; border-radius: 10px;
+      background: var(--accent); color: white; font-weight: 600;
+      transition: transform .02s ease, box-shadow .2s ease, opacity .2s ease;
+      box-shadow: 0 6px 16px rgba(37,99,235,.35);
+    }
+    .btn.secondary { background: transparent; color: var(--text); border: 1px solid var(--border); box-shadow:none }
+    .btn:disabled { opacity:.6; cursor:not-allowed }
+    .hint { font-size: .85rem; color: var(--muted) }
+    .status {
+      padding: 8px 10px; border-radius: 999px; font-size:.85rem; font-weight:600;
+      border: 1px solid var(--border); background: var(--chip);
+    }
+    .status.ok { color: var(--accent-2); border-color: rgba(16,185,129,.35) }
+    .status.err { color: var(--danger); border-color: rgba(244,63,94,.35) }
+    .answer {
+      white-space: pre-wrap;
+      line-height: 1.5;
+      font-size: 1.02rem;
+    }
+    .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top: 8px }
+    .chip {
+      padding: 8px 12px; border-radius: 999px; background: var(--chip);
+      border: 1px solid var(--border); font-size:.9rem;
+    }
+    .chip a { color: inherit; text-decoration: none; border-bottom: 1px dotted rgba(255,255,255,.25) }
+    .muted { color: var(--muted) }
+    .spinner {
+      width: 18px; height: 18px; border: 3px solid rgba(255,255,255,.25);
+      border-top-color: white; border-radius: 50%; display:inline-block; animation: spin .8s linear infinite;
+      vertical-align: -3px; margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg) } }
+    footer { margin-top: 24px; text-align:center; color: var(--muted); font-size:.85rem }
+    .grid { display:grid; grid-template-columns: 1fr; gap: 16px }
+    @media (min-width: 880px){ .grid { grid-template-columns: 1.2fr .8fr } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1>Legal Research Assistant (DE)</h1>
+          <div class="hint">StGB • Azure + pgvector • Antwort zuerst, dann Quellen</div>
+        </div>
+      </div>
+      <div id="connStatus" class="status">Nicht verbunden</div>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <div class="row">
+          <div class="grow">
+            <label for="apiBase">API-URL (Tunnel)</label>
+            <input id="apiBase" type="url" placeholder="https://cool-name.trycloudflare.com" />
+            <div class="hint">Diese URL kommt von deinem Tunnel (Cloudflare/ngrok). In FastAPI CORS muss dein GitHub Pages Ursprung erlaubt sein (z. B. <code>https://YOUR_GHPAGES_URL</code>).</div>
+          </div>
+          <div style="display:flex; align-items:flex-end; gap:8px">
+            <button id="btnConnect" class="btn">Verbinden</button>
+            <button id="btnPing" class="btn secondary">/healthz</button>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:14px">
+          <div class="grow">
+            <label for="question">Frage</label>
+            <textarea id="question" placeholder="Frag mich etwas zum StGB … (z. B. &quot;Welche Vorschrift regelt den Diebstahl?&quot;)"></textarea>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <div>
+            <label for="k">Top-K</label>
+            <input id="k" type="number" min="1" max="12" step="1" value="8" style="width:110px" />
+          </div>
+          <div>
+            <label for="law">Gesetz</label>
+            <select id="law" style="width:160px">
+              <option value="StGB">StGB</option>
+            </select>
+          </div>
+          <div style="flex:1"></div>
+          <div style="display:flex; align-items:flex-end; gap:8px">
+            <button id="btnAsk" class="btn">Frage senden</button>
+            <button id="btnClear" class="btn secondary">Zurücksetzen</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card">
+        <label>Demo-Prompts</label>
+        <div class="chips">
+          <button class="chip" data-q="Welche Vorschrift regelt den Diebstahl?">Diebstahl</button>
+          <button class="chip" data-q="Welche besonders schweren Fälle des Diebstahls kennt das StGB?">Schwere Fälle</button>
+          <button class="chip" data-q="Welches Strafmaß droht bei Mord?">Mord</button>
+          <button class="chip" data-q="Was bedeutet Notwehr im StGB?">Notwehr</button>
+          <button class="chip" data-q="Was sagt das StGB über die Nutzung von künstlicher Intelligenz?">Edge-Case</button>
+        </div>
+        <div class="hint" style="margin-top:8px">Klick zum Einfüllen &rarr; dann <b>Frage senden</b>.</div>
+      </aside>
+    </div>
+
+    <section class="card" style="margin-top:16px">
+      <label>Antwort</label>
+      <div id="answer" class="answer muted">Noch keine Antwort. Sende eine Frage …</div>
+      <div id="sources" class="chips" style="margin-top:10px"></div>
+    </section>
+
+    <footer style="margin-bottom:8px">
+      Prototype • Keine Rechtsberatung • © <span id="year"></span>
+    </footer>
+  </div>
+
+  <script>
+    const els = {
+      base: document.getElementById('apiBase'),
+      connect: document.getElementById('btnConnect'),
+      ping: document.getElementById('btnPing'),
+      status: document.getElementById('connStatus'),
+      q: document.getElementById('question'),
+      k: document.getElementById('k'),
+      law: document.getElementById('law'),
+      ask: document.getElementById('btnAsk'),
+      clear: document.getElementById('btnClear'),
+      answer: document.getElementById('answer'),
+      sources: document.getElementById('sources'),
+    };
+
+    const LS_KEY = 'legalrag.settings';
+    const saved = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+    if (saved.base) els.base.value = saved.base;
+    if (saved.k) els.k.value = saved.k;
+    if (saved.law) els.law.value = saved.law;
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    function setStatus(ok, msg) {
+      els.status.classList.remove('ok','err');
+      if (ok) els.status.classList.add('ok'); else els.status.classList.add('err');
+      els.status.textContent = msg;
+    }
+
+    function saveSettings() {
+      const data = { base: els.base.value.trim(), k: els.k.value, law: els.law.value };
+      localStorage.setItem(LS_KEY, JSON.stringify(data));
+    }
+
+    async function ping() {
+      const base = els.base.value.trim();
+      if (!base) return setStatus(false, 'Bitte API-URL eintragen');
+      try {
+        const r = await fetch(`${base}/healthz`);
+        if (!r.ok) throw new Error(r.status);
+        setStatus(true, 'Verbunden');
+      } catch (e) {
+        setStatus(false, 'Keine Verbindung');
+      }
+    }
+
+    function sectionLink(law, sec) {
+      const num = (sec || '').replace(/[^\dA-Za-z]/g,''); // "§ 242a" -> "242a"
+      const lawSlug = (law || 'StGB').toLowerCase();
+      return `https://www.gesetze-im-internet.de/${lawSlug}/__${num}.html`;
+    }
+
+    async function ask() {
+      const base = els.base.value.trim();
+      const question = els.q.value.trim();
+      const k = parseInt(els.k.value || '8', 10);
+      const law = els.law.value || 'StGB';
+      if (!base) return setStatus(false, 'Bitte API-URL eintragen');
+      if (!question) return;
+
+      saveSettings();
+      els.ask.disabled = true;
+      els.answer.classList.add('muted');
+      els.answer.innerHTML = `<span class="spinner"></span> Anfrage wird gesendet …`;
+      els.sources.innerHTML = '';
+
+      try {
+        const r = await fetch(`${base}/ask`, {
+          method: 'POST',
+          headers: { 'Content-Type':'application/json' },
+          body: JSON.stringify({ question, k, law })
+        });
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const data = await r.json();
+
+        els.answer.classList.remove('muted');
+        els.answer.textContent = data.answer || '—';
+
+        // Render sources from citations[]
+        const src = (data.citations || []);
+        els.sources.innerHTML = '';
+        src.forEach(s => {
+          const a = document.createElement('a');
+          a.href = sectionLink(law, s.section_number);
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.textContent = `§ ${s.section_number} ${s.section_title || ''}`.trim();
+          const chip = document.createElement('span');
+          chip.className = 'chip';
+          chip.appendChild(a);
+          const sim = typeof s.similarity === 'number' ? ` · ${(s.similarity*100).toFixed(1)}%` : '';
+          if (sim) chip.append(document.createTextNode(sim));
+          els.sources.appendChild(chip);
+        });
+        setStatus(true, 'Verbunden');
+      } catch (e) {
+        els.answer.classList.remove('muted');
+        els.answer.innerHTML = `Fehler beim Abruf.<br><span class="hint">${String(e)}</span>`;
+        setStatus(false, 'Fehler');
+      } finally {
+        els.ask.disabled = false;
+      }
+    }
+
+    // Events
+    els.connect.addEventListener('click', () => { saveSettings(); ping(); });
+    els.ping.addEventListener('click', ping);
+    els.ask.addEventListener('click', ask);
+    els.clear.addEventListener('click', () => {
+      els.q.value = '';
+      els.answer.textContent = 'Noch keine Antwort. Sende eine Frage …';
+      els.sources.innerHTML = '';
+    });
+    document.querySelectorAll('.chip[data-q]').forEach(b => {
+      b.addEventListener('click', () => { els.q.value = b.dataset.q; });
+    });
+  </script>
+</body>
+</html>
