@@ -1,4 +1,3 @@
-# save as embed_all_stgb.py and run:
 #   python embed_all_stgb.py --input data/interim/stgb_sections.ndjson --out data/processed/stgb_sections_with_vecs.ndjson
 
 import os, json, math, time, argparse, sys

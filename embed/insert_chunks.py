@@ -6,7 +6,8 @@ import psycopg2
 from psycopg2.extras import execute_values
 
 # Load .env explicitly from project root
-load_dotenv(Path("/home/noe/Desktop/Ai_Legal research_assistant/.env"))
+ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(ROOT / ".env")
 
 IN_PATH   = Path("/home/noe/Desktop/Ai_Legal research_assistant/data/processed/stgb_sections_with_vecs.ndjson")
 LAW_ABBR  = "StGB"

@@ -2,7 +2,10 @@
 import os, psycopg2
 from dotenv import load_dotenv
 from pathlib import Path
-load_dotenv(Path("/home/noe/Desktop/Ai_Legal research_assistant/.env"))
+
+ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(ROOT / ".env") 
+
 host = os.getenv("PGHOST")
 port = os.getenv("PGPORT")
 db   = os.getenv("PGDATABASE")

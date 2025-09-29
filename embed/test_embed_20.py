@@ -4,7 +4,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 import requests
 
-load_dotenv(Path("/home/noe/Desktop/Ai_Legal research_assistant/.env"))
+ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(ROOT / ".env")
 
 NDJSON = Path("/home/noe/Desktop/Ai_Legal research_assistant/data/interim/stgb_sections.ndjson")  # NDJSON with sections
 K = 5  # top-k results
