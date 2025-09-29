@@ -26,6 +26,23 @@ DB = dict(
 
 app = FastAPI(title="Legal RAG (DE)")
 
+# app/api.py (add near the top)
+from fastapi.middleware.cors import CORSMiddleware
+
+GHPAGES_ORIGIN = "https://omega-henry.github.io"  #
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[GHPAGES_ORIGIN],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
+)
+
+@app.get("/healthz")
+def healthz():
+    return {"ok": True}
+
 class AskReq(BaseModel):
     question: str
     k: int = 8
