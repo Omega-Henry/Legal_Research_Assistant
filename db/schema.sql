@@ -6,7 +6,7 @@ CREATE SCHEMA IF NOT EXISTS legal;
 CREATE TABLE IF NOT EXISTS legal.documents (
   id          BIGSERIAL PRIMARY KEY,
   law_abbr    TEXT NOT NULL,            -- 'StGB', 'BGB', ...
-  source_uri  TEXT,                     -- e.g., 'BJNR001270871.xml' (nullable)
+  source_uri  TEXT,                     --  'BJNR001270871.xml' (nullable)
   lang        TEXT DEFAULT 'de',
   created_at  TIMESTAMPTZ DEFAULT now()
 );
