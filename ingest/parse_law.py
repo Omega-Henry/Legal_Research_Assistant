@@ -3,8 +3,8 @@ import xml.etree.ElementTree as ET
 import json, re
 from pathlib import Path
 
-XML_IN  = Path("/home/noe/Desktop/Ai_Legal research_assistant/data/raw/BJNR001270871.xml")          # StGB XML
-NDJSON_OUT = Path("/home/noe/Desktop/Ai_Legal research_assistant/data/interim/stgb_sections.ndjson")  # output
+XML_IN  = Path("/home/noe/Desktop/Ai_Legal research_assistant/data/raw/BJNR002190897.xml")          #  XML RAW
+NDJSON_OUT = Path("/home/noe/Desktop/Ai_Legal research_assistant/data/interim/hgb_sections.ndjson")  # output
 
 def raw_text(el):
     return "".join(el.itertext()) if el is not None else ""
@@ -36,7 +36,7 @@ with NDJSON_OUT.open("w", encoding="utf-8") as f:
         full_text = clean(f"§ {sec_num} {title}\n\n{body}")
 
         rec = {
-            "law_abbr":   (md.findtext("./jurabk") or "StGB").strip(),
+            "law_abbr":   (md.findtext("./jurabk") or "HGB").strip(),
             "section_number": sec_num,
             "section_title": title,
             "full_text":  full_text,

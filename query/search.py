@@ -46,7 +46,7 @@ def search(query: str, k: int = 5):
                     1 - (c.embedding <=> %s::vector) AS similarity
                 FROM legal.chunks c
                 JOIN legal.documents d ON d.id = c.document_id
-                WHERE d.law_abbr = 'StGB'
+                WHERE d.law_abbr = 'HGB'
                 ORDER BY
                     (c.embedding <=> %s::vector)
                 + CASE
@@ -65,7 +65,7 @@ def search(query: str, k: int = 5):
     return rows
 
 if __name__ == "__main__":
-    q = "Welche Vorschrift regelt Diebstahl?"
+    q = "Welche Vorschrift regelt kündigung?"
     top = search(q, k=5)
     print(f"\nQuery: {q}\nTop {len(top)} Treffer:")
     for sec, title, sim in top:

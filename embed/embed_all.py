@@ -1,4 +1,4 @@
-#   python embed_all_stgb.py --input data/interim/stgb_sections.ndjson --out data/processed/stgb_sections_with_vecs.ndjson
+#   python embed_all.py --input data/interim/hgb_sections.ndjson --out data/processed/hgb_sections_with_vecs.ndjson
 
 import os, json, math, time, argparse, sys
 from pathlib import Path

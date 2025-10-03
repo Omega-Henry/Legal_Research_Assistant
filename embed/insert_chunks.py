@@ -9,9 +9,9 @@ from psycopg2.extras import execute_values
 ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(ROOT / ".env")
 
-IN_PATH   = Path("/home/noe/Desktop/Ai_Legal research_assistant/data/processed/stgb_sections_with_vecs.ndjson")
-LAW_ABBR  = "StGB"
-SOURCE_URI= "BJNR001270871.xml"
+IN_PATH   = Path("/home/noe/Desktop/Ai_Legal research_assistant/data/processed/hgb_sections_with_vecs.ndjson")
+LAW_ABBR  = "HGB"
+SOURCE_URI= "BJNR002190897.xml"
 BATCH     = 100  # tune 50–200
 
 def vec_str(v):  # pgvector-compatible string
@@ -97,7 +97,7 @@ def _flush(cur, rows):
     template = "(%s, %s, %s, %s, %s::vector)"
     execute_values(cur, """
         INSERT INTO legal.chunks
-          (document_id, section_number, section_title, full_text, embedding)
+            (document_id, section_number, section_title, full_text, embedding)
         VALUES %s
         ON CONFLICT (document_id, section_number) DO NOTHING
     """, rows, template=template, page_size=len(rows))
@@ -105,3 +105,4 @@ def _flush(cur, rows):
 if __name__ == "__main__":
     # limit=0 → load ALL; you can safely re-run to resume
     main(limit=0)
+
